@@ -1,0 +1,13 @@
+# groupadd
+# gpasswd -a jpeaches firewall-admin
+# su jpeaches
+$ iptables -L
+iptables v1.4.21: can't initialize iptables table 'filter': Permission denied (you must be root)
+Perhaps iptables or your kernel needs to be upgraded.
+$ sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+$ sudo echo hello
+[sudo] password for jpeaches: 
+Sorry, user jpeaches is not allowed to execute '/bin/echo hello' as root on jack8684-acbrownbag.

@@ -1,6 +1,4 @@
 Cmnd_Alias FIREWALLADM = /usr/sbin/ip, /usr/sbin/iptables, /usr/bin/netstat
-Defaults    requiretty
-Defaults   !visiblepw
 Defaults    always_set_home
 Defaults    env_reset
 Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin
