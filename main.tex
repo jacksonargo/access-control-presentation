@@ -161,7 +161,7 @@ Here are some common ways we see access control in daily life that are not parti
 \subsection{SELinux Booleans}
 
 \begin{frame}{Example: SELinux Booleans}
-\lstinputlisting{selinux_booleans.sh}
+\lstinputlisting{examples/selinux-booleans}
 \end{frame}
 
 \begin{frame}{Access Control Lists}
@@ -180,49 +180,49 @@ Here are some common ways we see access control in daily life that are not parti
 
 \begin{frame}{iptables}
 First, we define our iptables chains:
-\lstinputlisting[lastline=7]{iptables-rules.sh}
+\lstinputlisting[lastline=7]{examples/iptables}
 \end{frame}
 
 \begin{frame}{iptables}
 Next, we define the rules for each chain:
-\lstinputlisting[firstline=8,lastline=19]{iptables-rules.sh}
+\lstinputlisting[firstline=8,lastline=19]{examples/iptables}
 \end{frame}
 
 \begin{frame}{iptables}
 Now we can check our firewall settings. I ran these commands from bastion:
-\lstinputlisting{iptables-test.sh}
+\lstinputlisting{examples/iptables-test}
 \end{frame}
 
 \subsection{File Access Control Lists}
 
 \begin{frame}{File Access Control Lists}
-\lstinputlisting[lastline=15]{facls.sh}
+\lstinputlisting[lastline=15]{examples/facls}
 \end{frame}
 
 \begin{frame}{File Access Control Lists}
-\lstinputlisting[firstline=16,lastline=31]{facls.sh}
+\lstinputlisting[firstline=16,lastline=31]{examples/facls}
 \end{frame}
 
 \begin{frame}{File Access Control Lists}
-\lstinputlisting[firstline=34]{facls.sh}
+\lstinputlisting[firstline=34]{examples/facls}
 \end{frame}
 
 \subsection{Apache Access Control}
 
 \begin{frame}{Apache Access Control}
-\lstinputlisting[language=XML]{apache_acl.conf}
+\lstinputlisting[language=XML]{examples/apache}
 \end{frame}
 
 \begin{frame}{Apache Access Control}
-\lstinputlisting[lastline=7]{apache-test.sh}
+\lstinputlisting[lastline=7]{examples/apache-test}
 \end{frame}
 
 \begin{frame}{Apache Access Control}
-\lstinputlisting[firstline=8]{apache-test.sh}
+\lstinputlisting[firstline=8]{examples/apache-test}
 \end{frame}
 
 \begin{frame}{Apache Access Control}
-\lstinputlisting[language=XML,lastline=19]{apache-example2.conf}
+\lstinputlisting[language=XML,lastline=19]{examples/apache-2}
 \end{frame}
 
 \begin{frame}{Role Based Access Control}
@@ -253,12 +253,12 @@ We can use /etc/sudoers to create a \textit{firewall-admin} group that can:
 
 \begin{frame}{Linux Groups}
 Here is our sudoers file:
-\lstinputlisting{sudoers}
+\lstinputlisting{examples/sudoers}
 \end{frame}
 
 \begin{frame}{Linux Groups}
 Now we put the \textit{firewall-admin} group to use:
-\lstinputlisting{sudoers-test}
+\lstinputlisting{examples/sudoers-test}
 \end{frame}
 
 \section{Access Control in the Kernel}

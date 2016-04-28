@@ -1,4 +1,5 @@
 *.bak
+*.swp
 main.aux
 main.log
 main.nav
