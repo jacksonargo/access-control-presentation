@@ -1,3 +1,4 @@
+*.bak
 main.aux
 main.log
 main.nav
@@ -5,7 +6,6 @@ main.out
 main.pdf
 main.snm
 main.svg
-main.tex
 main.toc
 texput.log
 texput.pdf

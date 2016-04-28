@@ -1,0 +1,351 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{default}
+  \usecolortheme{default}
+  \usefonttheme{default}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{nth}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red,
+    urlcolor=cyan
+}
+
+\lstset{
+  language=bash,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\footnotesize\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\title[Access Control]{Access Control}
+\author{Jackson Argo}
+\institute{Rackspace MO After-hours}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\section{What is Access Control?}
+
+\begin{frame}{What is Access Control?}
+\begin{itemize}
+\item Access control is answering the question: \textit{Who can access what?}
+\item Our every day life relies on access control in many ways:
+\begin{itemize}
+\item We choose which thoughts that we want to share.
+\item We carry an id so that we can buy alcohol.
+\item The \nth{2} amendment guarantees us access to firearms.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Access Control in Linux}
+Unsurprisingly, Linux relies on access control as well.
+\begin{itemize}	
+\item The kernel protects memory space so that programs can't inhibit one another.
+\item Regular users cannot arbitrarily overwrite the root filesystem. 
+\item Apache blocks access to xmlrpc.php so people can run Wordpress sites.
+\end{itemize}
+\end{frame}
+
+\section{How Is Access Determined?}
+
+\begin{frame}{How Is Access Determined?}
+Before we can implement access control, we need to have a reliable way to determine whether access can be permitted. Valid access control requires the following:
+\begin{itemize}
+\item There must be a non-biased mechanism used to test for access.
+\item The mechanism must be sure that the user cannot be spoofed or impersonated.
+\item The user must be able to activate this mechanism.
+\item The user must be sure that the mechanism cannot be spoofed or impersonated.
+\item The result must be enforced by the operating system.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Trust}
+Like all of security, access control relies on trust. If you use a mechanism for access control, then you inherently trust that the mechanism will work properly.
+\end{frame}
+
+\section{Who Determines Access?}
+
+\begin{frame}{Who Determines Access?}
+Someone has to determine access control and security of different objects, whether it is an automated program or a user, i.e. \textit{Who has access to control access control?}
+\break \break
+There are two main approaches:
+\begin{itemize}
+  \item \textbf{Discretionary} - Any user may be involved in the definition on the policy function and/or assignment of security attributes. This places the burden of security on the user. \textit{E.x. file permissions, Facebook posts, 5$^{th}$ amendment.}
+  \item \textbf{Mandatory} - Policy functions and security attributes are tightly controlled by the system administrator. This places the burden of security on the administrator. \textit{E.x. SELinux, firewalls, sudoers.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Discretionary Access Control Gotchas}
+\begin{itemize}
+\item I want to re-emphasize that \textbf{discretionary access control places the burden of security on the user.} 
+\item This means that our customers need to have a good understanding of what needs to be protected and what doesn't.
+\item Our customers \textit{are} our customers because they do not necessarily have a good understanding of this.
+\item It follows that \textbf{WE} have to be extra vigilant in checking that things like file permissions are sane and will not compromise the server.
+\item We should also educate our customers when they are doing something wrong.
+\end{itemize}
+\end{frame}
+
+\section{Forms of Access Control}
+
+\begin{frame}{Forms of Access Control}
+In Linux, the mechanism for access control typically checks the user against predetermined set of criteria.
+\break \break
+These criteria look like:
+\begin {itemize}
+\item Simple Yes/No Rules
+\item Access Control Lists (ACL's)
+\item Role Based Access Control (RBAC)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Forms of Access Control}
+Here are some common ways we see access control in daily life that are not particularly common in Linux:
+\begin{itemize}
+\item Attribute Based Access Control (ABAC) - This is a more general form of RBAC. Instead of checking for only a list of roles, you can check any key attribute for any value.
+\item Time Based Access Control (TBAC) - Access is only granted during specific times, e.x. department store hours of operation.
+\item History Based Access Control (HBAC) - Access is granted based on a history of activities. fail2ban uses this type of access control.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simple Yes/No Rules}
+\begin{itemize}
+\item Yes/No/Pass/Fail rules are the simplest way to determine access, and all forms of access control can be generalized to these rules.
+\item Examples:
+\begin{itemize}
+\item \texttt{[ \$(id -u) = 0 ] || exit 1}
+\item SELinux booleans
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{SELinux Booleans}
+
+\begin{frame}{Example: SELinux Booleans}
+\lstinputlisting{selinux_booleans.sh}
+\end{frame}
+
+\begin{frame}{Access Control Lists}
+\begin{itemize}
+\item ACL's can be thought of as a chain or flow chart of standardized yes/no rules. The agent will be checked against all the rules until the chain is terminated by a final yes or no.
+\item Examples:
+\begin{itemize}
+\item iptables rules
+\item File ACLS
+\item Apache access control
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{iptables}
+
+\begin{frame}{iptables}
+First, we define our iptables chains:
+\lstinputlisting[lastline=7]{iptables-rules.sh}
+\end{frame}
+
+\begin{frame}{iptables}
+Next, we define the rules for each chain:
+\lstinputlisting[firstline=8,lastline=19]{iptables-rules.sh}
+\end{frame}
+
+\begin{frame}{iptables}
+Now we can check our firewall settings. I ran these commands from bastion:
+\lstinputlisting{iptables-test.sh}
+\end{frame}
+
+\subsection{File Access Control Lists}
+
+\begin{frame}{File Access Control Lists}
+\lstinputlisting[lastline=15]{facls.sh}
+\end{frame}
+
+\begin{frame}{File Access Control Lists}
+\lstinputlisting[firstline=16,lastline=31]{facls.sh}
+\end{frame}
+
+\begin{frame}{File Access Control Lists}
+\lstinputlisting[firstline=34]{facls.sh}
+\end{frame}
+
+\subsection{Apache Access Control}
+
+\begin{frame}{Apache Access Control}
+\lstinputlisting[language=XML]{apache_acl.conf}
+\end{frame}
+
+\begin{frame}{Apache Access Control}
+\lstinputlisting[lastline=7]{apache-test.sh}
+\end{frame}
+
+\begin{frame}{Apache Access Control}
+\lstinputlisting[firstline=8]{apache-test.sh}
+\end{frame}
+
+\begin{frame}{Apache Access Control}
+\lstinputlisting[language=XML,lastline=19]{apache-example2.conf}
+\end{frame}
+
+\begin{frame}{Role Based Access Control}
+Users are assigned roles, and objects have particular roles that are allowed to access them.
+These roles are often hierarchical, e.x. full admin > network admin > firewall admin.
+
+Examples:
+\begin{itemize}
+\item Linux groups
+\item Rackspace Cloud RBAC
+\item Rackspace internal roles
+\end{itemize}
+\end{frame}
+
+\subsection{Linux Groups}
+
+\begin{frame}{Linux Groups}
+When used in conjunction with sudo, Linux groups are a nice user abstraction that can be extended beyond simple file level access control.
+
+We can use /etc/sudoers to create a \textit{firewall-admin} group that can:
+\begin{itemize}
+\item Add and remove entries to /etc/hosts.
+\item Check what process are listening on open ports.
+\item Manage network interfaces and routes.
+\item View/update the firewall.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Linux Groups}
+Here is our sudoers file:
+\lstinputlisting{sudoers}
+\end{frame}
+
+\begin{frame}{Linux Groups}
+Now we put the \textit{firewall-admin} group to use:
+\lstinputlisting{sudoers-test}
+\end{frame}
+
+\section{Access Control in the Kernel}
+
+\begin{frame}{Access Control in the Kernel}
+In each form of access control we've discussed so far, the kernel is the decider and enforcer.
+The kernel ultimately decides who has has access to what, and it follows that we should be able to completely isolate a process's access to objects through the kernel alone.
+There are two kernel features that give us this power:
+\begin{itemize}
+\item \textbf{Namespaces} - Isolates a process's virtual resources.
+\item \textbf{Control Groups} - Restricts access to hardware resources.
+\end{itemize}
+\end{frame}
+
+\subsection{Namespaces}
+
+\begin{frame}{Namespaces}
+\begin{itemize}
+\item Think of namespaces as an abstraction of \textit{chroots}. Instead of just files, we can restrict network interfaces, pid's, users, and more.
+\item A  namespace  wraps  a  global system resource in an abstraction that makes it appear to the processes within the namespace that they have their own isolated instance of the global resource.
+\item Changes to the global resource are visible to other processes that are members of the namespace, but are invisible to other processes.
+\item One use  of  namespaces is to implement containers.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Types of Namespaces}
+There are 6 types of namespaces:
+\begin{itemize}
+\item \textbf{Mount} - Essentially a much stronger form of the classic chroot.
+\item \textbf{Network} - The namespace gets it's own virtual interface, and cannot see any other interface. Processes can attach to any ports on that interface without interfering with the portmapping outside the namespace.
+\item \textbf{PID} - The namespace gets it's own process list. The first process in the namespace will have pid 1.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Types of Namespaces}
+\begin{itemize}
+\item \textbf{User} - Similarly, the namespace gets it's own user list. A user inside the namespace can have the same uid as another user outside the namespace.
+\item \textbf{UTS} - Let's you set hostname and domain name for a namespace.
+\item \textbf{IPC (Interprocess Communication Mechanisms)} - Isolates message queues, semaphore sets, and shared memory segments.
+\end{itemize}
+\end{frame}
+
+\subsection{Control Groups}
+
+\begin{frame}{Control Groups}
+\begin{itemize}
+\item Think of control groups as an abstraction on \textit{nice}.
+Instead of only limiting CPU priority, we put limits on pretty much every way a process will interact with the hardware.
+\item There is a \textbf{LOT} of control we as system administrators have over cgroups, and I could dedicate an entire brown bag on how these work and how we can use them.
+\item Fedora has some pretty thorough documentation on this in their \href{https://docs.fedoraproject.org/en-US/Fedora/17/html/Resource_Management_Guide/index.html}{Resource Management Guide}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Types of Control Groups}
+\begin{itemize}
+\item \textbf{blkio} — this subsystem sets limits on input/output access to and from block devices such as physical drives (disk, solid state, USB, etc.).
+\item \textbf{cpu} — this subsystem uses the scheduler to provide cgroup tasks access to the CPU.
+\item \textbf{cpuacct} — this subsystem generates automatic reports on CPU resources used by tasks in a cgroup.
+\item \textbf{cpuset} — this subsystem assigns individual CPU's (on a multi-core system) and memory nodes to tasks in a cgroup.
+\item \textbf{devices} — this subsystem allows or denies access to devices by tasks in a cgroup.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Types of Control Groups}
+\begin{itemize}
+\item \textbf{freezer} — this subsystem suspends or resumes tasks in a cgroup.
+\item \textbf{memory} — this subsystem sets limits on memory use by tasks in a cgroup, and generates automatic reports on memory resources used by those tasks.
+\item \textbf{net\_cls} — this subsystem tags network packets with a class identifier (classid) that allows the Linux traffic controller (tc) to identify packets originating from a particular cgroup task.
+\item \textbf{net\_prio} — this subsystem provides a way to dynamically set the priority of network traffic per network interface.
+\item \textbf{ns} — the namespace subsystem. 
+\end{itemize}
+\end{frame}
+
+\subsection{Containers}
+
+\begin{frame}{Containers}
+\begin{itemize}
+\item We have all of these cool access control tools like namespaces, control groups, and SELinux policies, but how to we leverage them together?
+\item Linux Containers burrito all of these features to give us very strong process isolation (\url{https://linuxcontainers.org/}).
+\item This is the backbone of our favorite tool, \href{http://www.docker.com/}{Docker}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{END}
+\textbf{Questions? Comments? Concerns? Food?}
+\vskip 20pt
+\href{https://github.com/jacksonargo/access-control-presentation}{Contribute!}
+\end{frame}
+
+\end{document}
